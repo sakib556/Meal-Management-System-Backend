@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Meal Management</title>
+</head>
+<body>
+    <h1>Meal Management</h1>
+
+    <!-- Create Meal Form -->
+    <h2>Create Meal</h2>
+    <form id="createMealForm">
+        <label for="userId">User ID:</label>
+        <input type="text" id="userId" name="userId" required>
+
+        <label for="mealCount">Meal Count:</label>
+        <input type="text" id="mealCount" name="mealCount" required>
+
+        <label for="date">Date:</label>
+        <input type="text" id="date" name="date" placeholder="YYYY-MM-DD" required>
+
+        <button type="button" onclick="createMeal()">Create Meal</button>
+    </form>
+
+    <!-- Meal List -->
+    <h2>Meal List</h2>
+    <ul id="mealList"></ul>
+
+    <script>
+        function createMeal() {
+            var form = document.getElementById("createMealForm");
+            var formData = new FormData(form);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "meal.php?action=createMeal", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    alert(xhr.responseText);
+                    // Refresh the meal list after creating a new meal
+                    getMealList();
+                }
+            };
+            xhr.send(formData);
+        }
+
+        function getMealList() {
+            var mealList = document.getElementById("mealList");
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "meal.php?action=getAllMeals", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var meals = JSON.parse(xhr.responseText);
+                    mealList.innerHTML = ""; // Clear existing list
+
+                    meals.forEach(function(meal) {
+                        var listItem = document.createElement("li");
+                        listItem.innerHTML = "ID: " + meal.id +
+                            ", User ID: " + meal.userId +
+                            ", Meal Count: " + meal.mealCount +
+                            ", Date: " + meal.date +
+                            " [<a href='javascript:void(0)' onclick='updateMeal(" + meal.id + ")'>Update</a>]" +
+                            " [<a href='javascript:void(0)' onclick='deleteMeal(" + meal.id + ")'>Delete</a>]";
+                        mealList.appendChild(listItem);
+                    });
+                }
+            };
+            xhr.send();
+        }
+
+       function updateMeal(id) {
+    var newCount = prompt("Enter new meal count:");
+    if (newCount !== null) {
+        var userId = prompt("Enter user ID:");
+        if (userId !== null) {
+            var date = prompt("Enter new date (YYYY-MM-DD):");  // Add this line to prompt for the new date
+            if (date !== null) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "meal.php?action=updateMeal", true);
+                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        alert(xhr.responseText);
+                        // Refresh the meal list after updating a meal
+                        getMealList();
+                    }
+                };
+                xhr.send("id=" + id + "&userId=" + userId + "&mealCount=" + newCount + "&date=" + date);
+            }
+        }
+    }
+}
+
+
+
+        function deleteMeal(id) {
+            var confirmDelete = confirm("Are you sure you want to delete this meal?");
+            if (confirmDelete) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "meal.php?action=deleteMeal", true);
+                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        alert(xhr.responseText);
+                        // Refresh the meal list after deleting a meal
+                        getMealList();
+                    }
+                };
+                xhr.send("id=" + id);
+            }
+        }
+
+        // Initial load of meal list
+        getMealList();
+    </script>
+</body>
+</html>
+
+
+//cost
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cost Management</title>
+</head>
+<body>
+    <h1>Cost Management</h1>
+
+    <!-- Create Cost Form -->
+    <h2>Create Cost</h2>
+    <form id="createCostForm">
+        <label for="userId">User ID:</label>
+        <input type="text" id="userId" name="userId" required>
+
+        <label for="costType">Cost Type:</label>
+        <input type="text" id="costType" name="costType" required>
+
+        <label for="details">Details:</label>
+        <input type="text" id="details" name="details" required>
+
+        <label for="amount">Amount:</label>
+        <input type="text" id="amount" name="amount" required>
+
+        <label for="date">Date:</label>
+        <input type="text" id="date" name="date" placeholder="YYYY-MM-DD" required>
+
+        <button type="button" onclick="createCost()">Create Cost</button>
+    </form>
+
+    <!-- Cost List -->
+    <h2>Cost List</h2>
+    <ul id="costList"></ul>
+
+    <script>
+        function createCost() {
+            var form = document.getElementById("createCostForm");
+            var formData = new FormData(form);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "cost.php?action=createCost", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    alert(xhr.responseText);
+                    // Refresh the cost list after creating a new cost
+                    getCostList();
+                }
+            };
+            xhr.send(formData);
+        }
+
+        function getCostList() {
+            var costList = document.getElementById("costList");
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "cost.php?action=getCostList", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var costs = JSON.parse(xhr.responseText);
+                    costList.innerHTML = ""; // Clear existing list
+
+                    costs.forEach(function(cost) {
+                        var listItem = document.createElement("li");
+                        listItem.innerHTML = "ID: " + cost.id +
+                            ", User ID: " + cost.userId +
+                            ", Cost Type: " + cost.costType +
+                            ", Details: " + cost.details +
+                            ", Amount: " + cost.amount +
+                            ", Date: " + cost.date +
+                            " [<a href='javascript:void(0)' onclick='updateCost(" + cost.id + ")'>Update</a>]" +
+                            " [<a href='javascript:void(0)' onclick='deleteCost(" + cost.id + ")'>Delete</a>]";
+                        costList.appendChild(listItem);
+                    });
+                }
+            };
+            xhr.send();
+        }
+
+        function updateCost(id) {
+            var newDetails = prompt("Enter new details:");
+            if (newDetails !== null) {
+                var userId = prompt("Enter user ID:");
+                if (userId !== null) {
+                    var costType = prompt("Enter new cost type:");
+                    if (costType !== null) {
+                        var amount = prompt("Enter new amount:");
+                        if (amount !== null) {
+                            var date = prompt("Enter new date (YYYY-MM-DD):");
+                            if (date !== null) {
+                                var xhr = new XMLHttpRequest();
+                                xhr.open("POST", "cost.php?action=updateCost", true);
+                                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                                xhr.onreadystatechange = function() {
+                                    if (xhr.readyState == 4 && xhr.status == 200) {
+                                        alert(xhr.responseText);
+                                        // Refresh the cost list after updating a cost
+                                        getCostList();
+                                    }
+                                };
+                                xhr.send("id=" + id + "&userId=" + userId + "&costType=" + costType + "&details=" + newDetails + "&amount=" + amount + "&date=" + date);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function deleteCost(id) {
+            var confirmDelete = confirm("Are you sure you want to delete this cost?");
+            if (confirmDelete) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "cost.php?action=deleteCost", true);
+                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        alert(xhr.responseText);
+                        // Refresh the cost list after deleting a cost
+                        getCostList();
+                    }
+                };
+                xhr.send("id=" + id);
+            }
+        }
+
+        // Initial load of cost list
+        getCostList();
+    </script>
+</body>
+</html>
